@@ -1,4 +1,4 @@
-////////////////// ObligSBinTre /////////////////////////////////
+﻿////////////////// ObligSBinTre /////////////////////////////////
 
 import java.util.*;
 
@@ -194,14 +194,68 @@ public class ObligSBinTre<T> implements Beholder<T>
         throw new UnsupportedOperationException("Ikke kodet ennå!");
     }
 
-    public String bladnodeverdier()
-    {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+     public String printblader(Node<T> rot){
+           // Node<T> p = rot;
+        StringBuilder print = new StringBuilder();
+       // StringJoiner s = new StringJoiner(",", "[", "]");
+
+        //legger inn den første verdien
+        print.append("[");
+
+        if (rot == null){
+            return "[]";
+        }
+        if(rot.venstre == null && rot.høyre == null){
+            //  System.out.print(rot.verdi+" ");,
+            print.append(rot.verdi);
+        }
+        printblader(rot.venstre);
+        printblader(rot.høyre);
+
+//
+        print.append("]");
+        return print.toString();
+
     }
 
-    public String postString()
+    public String bladnodeverdier()
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        //throw new UnsupportedOperationException("Ikke kodet ennå!");
+//     return printblader(rot);
+     return printblader(rot);
+    }
+
+    public String postString(){
+        java.util.ArrayDeque<Node<T>> queue = new java.util.ArrayDeque<Node<T>>();
+            Node<T> p = rot;
+        queue.addFirst(p);
+        StringJoiner s = new StringJoiner(",", "[", "]");
+
+        while(!queue.isEmpty()){
+
+            int antall = queue.size();
+
+            for(int i = 0; i < antall; i++){
+                Node<T> current  = queue.removeLast();
+
+                s.add(current.verdi.toString());
+
+                if(current.høyre !=null){
+                    queue.addFirst(current.høyre);
+                }
+
+                if(current.venstre != null){
+                    queue.addFirst(current.venstre);
+                }
+
+
+
+            }
+        }
+       // s.append("]");
+
+        return s.toString();
+
     }
 
     @Override
