@@ -127,6 +127,8 @@ public class ObligSBinTre<T> implements Beholder<T>
         return antall == 0;
     }
 
+
+
     @Override
     public void nullstill()
     {
@@ -189,9 +191,19 @@ public class ObligSBinTre<T> implements Beholder<T>
         throw new UnsupportedOperationException("Ikke kodet ennå!");
     }
 
-    public String[] grener()
-    {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+    public String[] grener() {
+        if (tom()) {
+            return new String[]{};
+        }
+
+        Deque<Node<T>> stakk = new ArrayDeque<>();
+        String[] tabell;
+        Node p = rot;
+
+        for (; p.høyre != null; p = p.høyre) stakk.push(p);
+
+
+
     }
 
     public String bladnodeverdier()
