@@ -1,5 +1,6 @@
-﻿////////////////// ObligSBinTre /////////////////////////////////
+////////////////// ObligSBinTre /////////////////////////////////
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class ObligSBinTre<T> implements Beholder<T>
@@ -132,7 +133,8 @@ public class ObligSBinTre<T> implements Beholder<T>
     @Override
     public void nullstill()
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        rot = null;
+        antall = 0;
     }
 
     private static <T> Node<T> nesteInorden(Node<T> p)
@@ -147,37 +149,39 @@ public class ObligSBinTre<T> implements Beholder<T>
     }
 
     public String omvendtString() {
-        StringBuilder s = new StringBuilder();
-        s.append("[");
 
         if (tom()) {
             return "[]";
         }
-            ArrayDeque<Node<T>> stakk = new ArrayDeque<>();
-            Node<T> p = rot;   // starter i roten og går til venstre
+        StringJoiner sj = new StringJoiner(", ", "[" , "]");
 
-            for (; p.høyre != null; p = p.høyre) stakk.push(p);
+        ArrayDeque<Node<T>> stakk = new ArrayDeque<>();
+        Node<T> p = rot;   // starter i roten og går til venstre
 
-            while (true) {
-                s.append(p.verdi).append(",").append(" ");
+        for (; p.høyre != null; p = p.høyre) stakk.addLast(p); // Legger til sist på stakken
+        sj.add(p.verdi.toString()); // Legger inn første verdi
 
-                if (p.venstre != null)          // til venstre i høyre subtre
-                {
-                    for (p = p.venstre; p.høyre != null; p = p.høyre) {
-                        stakk.push(p);
+        while (true) {
+            if (p.venstre != null)          // til høyre i venstre subtre
+            {
 
-                    }
-                }   else if (!stakk.isEmpty()) {
-                    p = stakk.pop();   // p.høyre == null, henter fra stakken
+                for (p = p.venstre; p.høyre != null; p = p.høyre) {
+                    stakk.add(p);
+
                 }
-                else break;          // stakken er tom - vi er ferdig
+            }   else if (!stakk.isEmpty()) {
+                p = stakk.removeLast();   // p.høyre == null, henter fra stakken
+            }
+            else break;          // stakken er tom - vi er ferdig
 
-            } // while
+            sj.add(p.verdi.toString());
+        } // while
 
 
-            s.append("]");
 
-        return s.toString();
+        return sj.toString();
+
+
     }
 
 
@@ -193,23 +197,37 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     public String[] grener() {
         if (tom()) {
-            return new String[]{};
+            return new String[0];
         }
 
-        Deque<Node<T>> stakk = new ArrayDeque<>();
-        String[] tabell;
+        ArrayDeque<T> stakk = new ArrayDeque<>();
+        ArrayList<String> tabelliste = new ArrayList<>();
         Node p = rot;
+        grener(p,tabelliste, stakk);
 
-        for (; p.høyre != null; p = p.høyre) stakk.push(p);
+        String[] tabell = new String[tabelliste.size()];
+        for (int i = 0; i < tabell.length; i++) {
+            tabell[i] = tabelliste.get(i);
+        }
 
-
+        return tabell;
 
     }
 
-     public String printblader(Node<T> rot){
-           // Node<T> p = rot;
+    private void grener(Node<T> p, ArrayList<String> tabellliste, ArrayDeque<T> stakk) {
+
+        stakk.addLast(p.verdi);
+        if (p.venstre != null) grener(p.venstre, tabellliste, stakk);
+        if (p.høyre != null) grener(p.høyre, tabellliste, stakk);
+        if (p.venstre == null && p.høyre == null) tabellliste.add(stakk.toString());
+
+        stakk.removeLast();
+    }
+
+    public String printblader(Node<T> rot){
+        // Node<T> p = rot;
         StringBuilder print = new StringBuilder();
-       // StringJoiner s = new StringJoiner(",", "[", "]");
+        // StringJoiner s = new StringJoiner(",", "[", "]");
 
         //legger inn den første verdien
         print.append("[");
@@ -234,12 +252,12 @@ public class ObligSBinTre<T> implements Beholder<T>
     {
         //throw new UnsupportedOperationException("Ikke kodet ennå!");
 //     return printblader(rot);
-     return printblader(rot);
+        return printblader(rot);
     }
 
     public String postString(){
         java.util.ArrayDeque<Node<T>> queue = new java.util.ArrayDeque<Node<T>>();
-            Node<T> p = rot;
+        Node<T> p = rot;
         queue.addFirst(p);
         StringJoiner s = new StringJoiner(",", "[", "]");
 
@@ -264,7 +282,7 @@ public class ObligSBinTre<T> implements Beholder<T>
 
             }
         }
-       // s.append("]");
+        // s.append("]");
 
         return s.toString();
 
