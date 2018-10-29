@@ -1,6 +1,5 @@
 ////////////////// ObligSBinTre /////////////////////////////////
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ObligSBinTre<T> implements Beholder<T>
@@ -187,12 +186,82 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     public String høyreGren()
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        if(rot == null) return "[]";
+
+        StringBuilder s = new StringBuilder();
+
+        s.append( "[" );
+
+        Node<T> p = rot;
+
+
+        if (p.høyre == null && p.venstre == null) {            // Sjekker om første gren er en bladnode
+            s.append(p.verdi);
+        }
+
+        else {
+            s.append(p.verdi);
+            s.append(", ");
+
+            while (p.høyre != null || p.venstre != null) {     // Slutter ved en bladnode
+
+                if (p.høyre != null) {                         // Går til høyre om noden har et høyrebarn
+
+                    p = p.høyre;
+                    s.append(p.verdi);
+                }
+
+                else {                                           // Går til venstre hvis ikke noden har et høyrebarn
+
+                    p = p.venstre;
+                    s.append(p.verdi);
+                }
+
+                if (p.høyre == null && p.venstre == null) break; // Sjekker om noden er sist i treet
+
+                else s.append(", ");
+            }
+        }
+
+        s.append( "]" );
+        return s.toString();
     }
 
     public String lengstGren()
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        if (rot == null) return "[]";
+
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.add(rot);
+
+        Node<T> p = null;
+
+        while (!stack.isEmpty())
+        {
+            p = stack.remove();
+
+            if (p.høyre != null) stack.add(p.høyre);
+
+            if (p.venstre != null) stack.add(p.venstre);
+
+        }
+
+        List<T> liste = new ArrayList<>();
+
+        Node<T> q = rot;
+
+        while (q != null)
+        {
+            liste.add(q.verdi);
+            if (comp.compare(p.verdi, q.verdi) < 0) {
+                q = q.venstre;
+            }
+            else {
+                q = q.høyre;
+            }
+        }
+
+        return liste.toString();
     }
 
     public String[] grener() {
