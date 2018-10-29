@@ -231,18 +231,18 @@ public class ObligSBinTre<T> implements Beholder<T>
     {
         if (rot == null) return "[]";
 
-        Deque<Node> stack = new ArrayDeque<>();
-        stack.add(rot);
+        Deque<Node> deque = new ArrayDeque<>();
+        deque.add(rot);
 
         Node<T> p = null;
 
-        while (!stack.isEmpty())
+        while (!deque.isEmpty())
         {
-            p = stack.remove();
+            p = deque.remove();
 
-            if (p.høyre != null) stack.add(p.høyre);
+            if (p.høyre != null) deque.add(p.høyre);
 
-            if (p.venstre != null) stack.add(p.venstre);
+            if (p.venstre != null) deque.add(p.venstre);
 
         }
 
