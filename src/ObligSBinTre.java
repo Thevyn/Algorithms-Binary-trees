@@ -1,4 +1,4 @@
-////////////////// ObligSBinTre /////////////////////////////////
+﻿////////////////// ObligSBinTre /////////////////////////////////
 
 import java.util.*;
 
@@ -293,27 +293,23 @@ public class ObligSBinTre<T> implements Beholder<T>
         stakk.removeLast();
     }
 
-    public String printblader(Node<T> rot){
-        // Node<T> p = rot;
-        StringBuilder print = new StringBuilder();
-        // StringJoiner s = new StringJoiner(",", "[", "]");
+     public String printblader(Node<T> rot,StringJoiner s){
 
-        //legger inn den første verdien
-        print.append("[");
-
-        if (rot == null){
-            return "[]";
+        if(rot == null){
+            return s.toString();        //hvis rot == null så returnerer den en string
         }
-        if(rot.venstre == null && rot.høyre == null){
-            //  System.out.print(rot.verdi+" ");,
-            print.append(rot.verdi);
+        if(rot.venstre !=null){
+            printblader(rot.venstre,s);   //så lenge venstre ikke er null, så sjekker metoden venstre side av treet
         }
-        printblader(rot.venstre);
-        printblader(rot.høyre);
+        if(rot.høyre !=null){
+            printblader(rot.høyre,s);   //så lenge høyre ikke er null, så sjekker metoden høyre side av treet
+        }
+        if(rot.venstre == null && rot.høyre == null) {
 
-//
-        print.append("]");
-        return print.toString();
+            s.add(rot.verdi.toString());        //legger til verdien inn i en stringoiner
+//        }
+        }
+            return s.toString();
 
     }
 
@@ -321,39 +317,47 @@ public class ObligSBinTre<T> implements Beholder<T>
     {
         //throw new UnsupportedOperationException("Ikke kodet ennå!");
 //     return printblader(rot);
-        return printblader(rot);
+        StringJoiner s = new StringJoiner(", ", "[", "]");
+
+        if(!tom()){
+            printblader(rot,s);
+        }
+
+        return s.toString();
     }
 
     public String postString(){
-        java.util.ArrayDeque<Node<T>> queue = new java.util.ArrayDeque<Node<T>>();
-        Node<T> p = rot;
-        queue.addFirst(p);
-        StringJoiner s = new StringJoiner(",", "[", "]");
+        java.util.ArrayDeque<Node<T>> stakk = new java.util.ArrayDeque<Node<T>>();
+        //StringJoiner s = new StringJoiner(", ");
+        if(rot == null){
+                    return "[]";
+                }
+            Node<T> p = rot;
+            stakk.addFirst(p);  // legger til rot i stakk
 
-        while(!queue.isEmpty()){
+        java.util.Deque<String> output = new java.util.ArrayDeque<>();
 
-            int antall = queue.size();
+        while(!stakk.isEmpty()){
 
-            for(int i = 0; i < antall; i++){
-                Node<T> current  = queue.removeLast();
+            int antall = stakk.size();
 
-                s.add(current.verdi.toString());
+            for(int i = 0; i < antall; i++) {
 
-                if(current.høyre !=null){
-                    queue.addFirst(current.høyre);
+                Node<T> current = stakk.removeFirst();
+                output.addFirst(current.verdi.toString());
+
+                if (current.venstre != null) {
+                    stakk.addFirst(current.venstre);
                 }
 
-                if(current.venstre != null){
-                    queue.addFirst(current.venstre);
+                if (current.høyre != null) {
+                    stakk.addFirst(current.høyre);
                 }
-
-
-
             }
-        }
-        // s.append("]");
 
-        return s.toString();
+        }
+
+        return output.toString();
 
     }
 
