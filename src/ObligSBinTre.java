@@ -392,11 +392,42 @@ public class ObligSBinTre<T> implements Beholder<T>
         private Node<T> p = rot, q = null;
         private boolean removeOK = false;
         private int iteratorendringer = endringer;
-
-        private BladnodeIterator()  // konstruktør
+  private BladnodeIterator()  // konstruktør
         {
-            throw new UnsupportedOperationException("Ikke kodet ennå!");
-        }
+            if (tom()) {
+                return;
+            }
+                p = firstLeaf(rot);
+                q = null;
+                removeOK = true;
+                iteratorendringer = endringer;
+//            while (p !=null&& (p.venstre != null || p.høyre != null)) {
+//                p = p.venstre;
+//                if (p.venstre == null) {
+//                    p = p.høyre;
+//                }
+//            }
+           }
+
+           private Node<T> nestLeaf(Node<T> p){
+            Node <T> a = p.forelder;
+            while(a != null && (p ==a.venstre || p.høyre == null)){
+                p = a;
+                a = a.forelder;
+            }
+            return a == null ? null :firstLeaf(a.høyre);
+           }
+
+           private <T>Node<T> firstLeaf(Node <T> p){
+            while(true){
+                if(p.venstre != null){
+                    p = p.venstre;
+                }
+                if(p.høyre !=null){
+                    p = p.høyre;
+                }else return p;
+            }
+           }
 
         @Override
         public boolean hasNext()
