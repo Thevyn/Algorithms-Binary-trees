@@ -138,7 +138,27 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     private static <T> Node<T> nesteInorden(Node<T> p)
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+         if(p.høyre != null){
+            p = p.høyre;
+
+            while(p.venstre != null){
+                p = p.venstre;
+
+                return p;
+            }
+
+
+            }else{
+            Node<T> q = p.forelder;
+            while(q != null && p==q.høyre){
+                p = q;
+                q = p.forelder;
+            }
+        }
+
+        //throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+        return p.forelder;
     }
 
     @Override
@@ -385,9 +405,28 @@ public class ObligSBinTre<T> implements Beholder<T>
         }
 
         @Override
+      
         public T next()
         {
-            throw new UnsupportedOperationException("Ikke kodet ennå!");
+           // throw new UnsupportedOperationException("Ikke kodet ennå!");
+            if(!hasNext()){
+                throw new NoSuchElementException("Treet har ikke flere bladnoder");
+            }
+            T value = p.verdi;
+            q = p;
+            while(true){
+                if(nesteInorden(p) == null){
+                    p = nesteInorden(p);
+                    break;
+                }
+                p = nesteInorden(p);
+                if(p.venstre == null && p.høyre == null){
+                    break;
+                }
+
+            }
+            removeOK = true;
+            return value;
         }
 
         @Override
