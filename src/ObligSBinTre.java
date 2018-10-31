@@ -138,27 +138,21 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     private static <T> Node<T> nesteInorden(Node<T> p)
     {
-         if(p.høyre != null){
-            p = p.høyre;
-
-            while(p.venstre != null){
-                p = p.venstre;
-
-                return p;
-            }
-
-
-            }else{
-            Node<T> q = p.forelder;
-            while(q != null && p==q.høyre){
-                p = q;
-                q = p.forelder;
-            }
+        if (p.høyre != null)
+    {
+        p = p.høyre;
+        while (p.venstre != null) {
+            p = p.venstre;
         }
-
-        //throw new UnsupportedOperationException("Ikke kodet ennå!");
-
-        return p.forelder;
+        return p;
+    }
+    else
+    {
+        Node<T> f = p.forelder;
+        while (f != null && f.høyre == p) {
+            p = f; f = f.forelder;
+        }
+        return f == null ? null : f;
     }
 
     @Override
@@ -399,14 +393,9 @@ public class ObligSBinTre<T> implements Beholder<T>
             }
                 p = firstLeaf(rot);
                 q = null;
-                removeOK = true;
+                removeOK = false;
                 iteratorendringer = endringer;
-//            while (p !=null&& (p.venstre != null || p.høyre != null)) {
-//                p = p.venstre;
-//                if (p.venstre == null) {
-//                    p = p.høyre;
-//                }
-//            }
+
            }
 
            private Node<T> nestLeaf(Node<T> p){
@@ -443,21 +432,14 @@ public class ObligSBinTre<T> implements Beholder<T>
             if(!hasNext()){
                 throw new NoSuchElementException("Treet har ikke flere bladnoder");
             }
-            T value = p.verdi;
+	if(iteratorendringer != endringer){
+            throw new ConcurrentModificationException("iteratorendringer er " + iteratorendringer + " og" + endringer);
+           removeOK = true;
             q = p;
-            while(true){
-                if(nesteInorden(p) == null){
-                    p = nesteInorden(p);
-                    break;
-                }
-                p = nesteInorden(p);
-                if(p.venstre == null && p.høyre == null){
-                    break;
-                }
-
-            }
-            removeOK = true;
-            return value;
+	p = p.nestLeaf(p);
+	return q.verdi;
+           
+	   
         }
 
         @Override
