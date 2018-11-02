@@ -1,4 +1,4 @@
-﻿////////////////// ObligSBinTre /////////////////////////////////
+////////////////// ObligSBinTre /////////////////////////////////
 
 import java.util.*;
 
@@ -435,7 +435,7 @@ public class ObligSBinTre<T> implements Beholder<T>
         stakk.removeLast();
     }
 
-     public String printblader(Node<T> rot,StringJoiner s){
+    public String printblader(Node<T> rot,StringJoiner s){
 
         if(rot == null){
             return s.toString();        //hvis rot == null så returnerer den en string
@@ -451,7 +451,7 @@ public class ObligSBinTre<T> implements Beholder<T>
             s.add(rot.verdi.toString());        //legger til verdien inn i en stringoiner
 //        }
         }
-            return s.toString();
+        return s.toString();
 
     }
 
@@ -472,10 +472,10 @@ public class ObligSBinTre<T> implements Beholder<T>
         java.util.ArrayDeque<Node<T>> stakk = new java.util.ArrayDeque<Node<T>>();
         //StringJoiner s = new StringJoiner(", ");
         if(rot == null){
-                    return "[]";
-                }
-            Node<T> p = rot;
-            stakk.addFirst(p);  // legger til rot i stakk
+            return "[]";
+        }
+        Node<T> p = rot;
+        stakk.addFirst(p);  // legger til rot i stakk
 
         java.util.Deque<String> output = new java.util.ArrayDeque<>();
 
@@ -520,20 +520,21 @@ public class ObligSBinTre<T> implements Beholder<T>
                 return;
             }
 
-                p = firstLeaf(p);
-                q = null;
-                removeOK = false;
-                iteratorendringer = endringer;
-            }
-            private  <T> Node<T> firstLeaf(Node<T> p)
+            p = firstLeaf(p);
+            q = null;
+            removeOK = false;
+            iteratorendringer = endringer;
+        }
+        
+        private  <T> Node<T> firstLeaf(Node<T> p)
+        {
+            while (true)
             {
-                while (true)
-                {
-                    if (p.venstre != null){ p = p.venstre;}
-                    else if (p.høyre != null){ p = p.høyre;}
-                    else return p;  // p er en bladnode
-                }
+                if (p.venstre != null){ p = p.venstre;}
+                else if (p.høyre != null){ p = p.høyre;}
+                else return p;  // p er en bladnode
             }
+        }
 
         // hjelpemetode som med utgangspunkt i en bladnode p finner neste bladnode
         private  <T> Node<T> nextLeaf(Node<T> p) {
@@ -547,9 +548,9 @@ public class ObligSBinTre<T> implements Beholder<T>
             }else{
                 return firstLeaf(f.høyre);
             }
-           }
-
-           private <T>Node<T> firstLeaf(Node <T> p){
+        }
+        /*
+        private <T>Node<T> firstLeaf(Node <T> p){
             while(true){
                 if(p.venstre != null){
                     p = p.venstre;
@@ -558,7 +559,8 @@ public class ObligSBinTre<T> implements Beholder<T>
                     p = p.høyre;
                 }else return p;
             }
-           }
+        }
+        */
 
         @Override
         public boolean hasNext()
@@ -567,7 +569,7 @@ public class ObligSBinTre<T> implements Beholder<T>
         }
 
         @Override
-      
+
         public T next()
         {
             if(!hasNext()){
