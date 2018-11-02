@@ -1,5 +1,3 @@
-﻿////////////////// ObligSBinTre /////////////////////////////////
-
 import java.util.*;
 
 public class ObligSBinTre<T> implements Beholder<T>
@@ -139,29 +137,27 @@ public class ObligSBinTre<T> implements Beholder<T>
         antall = 0;
     }
 
-    private static <T> Node<T> nesteInorden(Node<T> p)
-    {
-        if (p.høyre != null)
-    {
-        p = p.høyre;
-        while (p.venstre != null) {
-            p = p.venstre;
+    private static <T> Node<T> nesteInorden(Node<T> p) {
+        if (p.høyre != null) {
+            p = p.høyre;
+            while (p.venstre != null) {
+                p = p.venstre;
+            }
+            return p;
+        } else {
+            Node<T> f = p.forelder;
+            while (f != null && f.høyre == p) {
+                p = f;
+                f = f.forelder;
+            }
+            return f == null ? null : f;
         }
-        return p;
-    }
-    else
-    {
-        Node<T> f = p.forelder;
-        while (f != null && f.høyre == p) {
-            p = f; f = f.forelder;
-        }
-        return f == null ? null : f;
     }
 
     @Override
     public String toString()
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+       throw new UnsupportedOperationException("Ikke kodet ennå!");
     }
 
     public String omvendtString() {
@@ -389,66 +385,90 @@ public class ObligSBinTre<T> implements Beholder<T>
         private Node<T> p = rot, q = null;
         private boolean removeOK = false;
         private int iteratorendringer = endringer;
-  private BladnodeIterator()  // konstruktør
+        private BladnodeIterator()  // konstrukt�r
+        { if(tom()){
+            return;
+        }
+
+            p = firstLeaf(p);
+            q = null;
+            removeOK = false;
+            iteratorendringer = endringer;
+        }
+        private  <T> Node<T> firstLeaf(Node<T> p)
         {
-            if (tom()) {
-                return;
+            while (true)
+            {
+                if (p.venstre != null){ p = p.venstre;}
+                else if (p.høyre != null){ p = p.høyre;}
+                else return p;  // p er en bladnode
             }
-                p = firstLeaf(rot);
-                q = null;
-                removeOK = false;
-                iteratorendringer = endringer;
+        }
 
-           }
-
-           private Node<T> nestLeaf(Node<T> p){
-            Node <T> a = p.forelder;
-            while(a != null && (p ==a.venstre || p.høyre == null)){
-                p = a;
-                a = a.forelder;
+        // hjelpemetode som med utgangspunkt i en bladnode p finner neste bladnode
+        private  <T> Node<T> nextLeaf(Node<T> p) {
+            Node<T> f = p.forelder;  // g�r f�rst oppover
+            while (f != null && (p == f.høyre || f.høyre == null)) {
+                p = f;
+                f = f.forelder;
             }
-            return a == null ? null :firstLeaf(a.høyre);
-           }
-
-           private <T>Node<T> firstLeaf(Node <T> p){
-            while(true){
-                if(p.venstre != null){
-                    p = p.venstre;
-                }
-                if(p.høyre !=null){
-                    p = p.høyre;
-                }else return p;
+            if (f == null){
+                return null;
+            }else{
+                return firstLeaf(f.høyre);
             }
-           }
+
+        }
+        @Override
+        public T next()
+        {
+            // throw new UnsupportedOperationException("Ikke kodet enn�!");
+            if(!hasNext()){
+                throw new NoSuchElementException("Treet har ikke bladnoder");       //kaster en exception hvis det ikke finnes noe p.
+            }if(iteratorendringer != endringer){
+            throw new ConcurrentModificationException("iteratorendringer er " + iteratorendringer + " og" + endringer);
+        }
+
+            removeOK = true;
+            q = p;
+            p = nextLeaf(p);
+            return q.verdi;
+        }
 
         @Override
         public boolean hasNext()
         {
             return p != null;  // Denne skal ikke endres!
         }
-
-        @Override
-      
-        public T next()
-        {
-           // throw new UnsupportedOperationException("Ikke kodet ennå!");
-            if(!hasNext()){
-                throw new NoSuchElementException("Treet har ikke flere bladnoder");
-            }
-	if(iteratorendringer != endringer){
-            throw new ConcurrentModificationException("iteratorendringer er " + iteratorendringer + " og" + endringer);
-           removeOK = true;
-            q = p;
-	p = p.nestLeaf(p);
-	return q.verdi;
-           
-	   
-        }
-
         @Override
         public void remove()
         {
-            throw new UnsupportedOperationException("Ikke kodet ennå!");
+            //throw new UnsupportedOperationException("Ikke kodet ennå!");
+            if (q == null || !removeOK) {
+                throw new IllegalStateException
+                        ("Verdien kan ikke fjernes");
+            }
+
+            Node<T> f = q.forelder;
+
+            if (rot == q) {
+                rot = null;
+            } else if (f != rot) {
+
+                if (f.høyre == q) {
+                    f.høyre=null;
+                    antall--;
+                }
+                if (f.venstre == q) {
+                    f.venstre=null;
+                    antall--;
+                }
+
+            }
+
+            iteratorendringer++;
+            endringer++;
+            removeOK = false;
         }
 
     } // BladnodeIterator
