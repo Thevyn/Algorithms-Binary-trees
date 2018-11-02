@@ -89,15 +89,94 @@ public class ObligSBinTre<T> implements Beholder<T>
         return false;
     }
 
+    // kode fra kapittel 5.2 8 D i laerebok, med endringer i pekere
     @Override
     public boolean fjern(T verdi)
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        if (verdi == null) return false;  // treet har ingen nullverdier
+
+        Node<T> p = rot, q = null;   // q skal være forelder til p
+
+        while (p != null)            // leter etter verdi
+        {
+            int cmp = comp.compare(verdi,p.verdi);      // sammenligner
+            if (cmp < 0) {
+                q = p;
+                p = p.venstre;
+            }      // går til venstre
+            else if (cmp > 0) {
+                q = p;
+                p = p.høyre;
+            }   // går til høyre
+            else break;    // den søkte verdien ligger i p
+        }
+        if (p == null) {
+            return false;   // finner ikke verdi
+        }
+
+        if (p.venstre == null || p.høyre == null)  // Tilfelle 1) og 2)
+        {
+            Node<T> b;
+            if (p.venstre != null) {
+                b = p.venstre;
+            } else {
+                b = p.høyre;
+            }
+            if (p == rot) {
+                rot = b;
+            } else if (p == q.venstre) {
+                q.venstre = b;
+                if (b != null) {
+                    b.forelder = q;
+                }
+            } else {
+                q.høyre = b;
+                if (b != null) {
+                    b.forelder = q;
+                }
+            }
+        }
+        else  // Tilfelle 3)
+        {
+            Node<T> s = p, r = p.høyre;   // finner neste i inorden
+            while (r.venstre != null)
+            {
+                // s = r;    // s er forelder til r
+                r = r.venstre;
+            }
+
+            p.verdi = r.verdi;   // kopierer verdien i r til p
+            s = r.forelder;
+
+            if (s != p) {
+                s.venstre = r.høyre;
+                if (r.høyre != null) {
+                    r.høyre.forelder = s.venstre;
+                }
+            } else {
+                s.høyre = r.høyre;
+                if (r.høyre != null) {
+                    r.høyre.forelder = s.høyre;
+                }
+            }
+        }
+
+        endringer++; // vi har gjort en endring
+        antall--;   // det er nå én node mindre i treet
+        return true;
     }
 
     public int fjernAlle(T verdi)
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        int antallSlettet = 0;
+
+        // det passer fint at fjern() er en boolean,
+        // da kan vi bare bruke en while lokke og kalle
+        // paa den for aa fjerne alle verdier.
+        while (fjern(verdi)) {
+            antallSlettet++;
+        }
+        return antallSlettet;
     }
 
     @Override
@@ -131,37 +210,83 @@ public class ObligSBinTre<T> implements Beholder<T>
     }
 
 
+    // rekursiv hjelpemetode til nullstill()
+    public Node<T> post(Node p) {
+        if (p == null) {
+            return null;
+        }
+        p.venstre = post(p.venstre);
+        p.høyre = post(p.høyre);
+        p = null;
+        antall--;
+        endringer++;
+        return p;
+    }
 
     @Override
     public void nullstill()
     {
-        rot = null;
-        antall = 0;
+        if (tom()) {
+            return;
+        }
+        // kaller paa post for aa rekursivt slette noder
+        post(rot);
+
     }
 
+    /*
+        nesteInorden bygger paa kode fra laerebok kap 5.1
+     */
     private static <T> Node<T> nesteInorden(Node<T> p)
     {
-        if (p.høyre != null)
-    {
-        p = p.høyre;
-        while (p.venstre != null) {
-            p = p.venstre;
+        Objects.requireNonNull(p);
+
+        if (p.høyre != null) {
+            p = p.høyre;
+            while (p.venstre != null) {
+                p = p.venstre;
+            }
+        } else {
+            while (p.forelder != null && p == p.forelder.høyre) {
+                p = p.forelder;
+            }
+            p = p.forelder;
         }
         return p;
-    }
-    else
-    {
-        Node<T> f = p.forelder;
-        while (f != null && f.høyre == p) {
-            p = f; f = f.forelder;
-        }
-        return f == null ? null : f;
+
     }
 
+    /*
+        tar i bruk nesteInorden, og bruker en while lokke
+        som oppgavetekst foreslaar. Deler av koden er den
+        samme jeg brukte i oblig2
+     */
     @Override
     public String toString()
     {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        if (antall < 1){
+            return "[]";
+        }
+        Node p = rot;
+
+        while(p.venstre != null){
+            p = p.venstre;
+        }
+
+        StringBuilder text = new StringBuilder();
+        text.append("[").append(p.verdi);
+
+        p = nesteInorden(p);
+
+        int teller = 0;
+        while (teller < antall-1) {
+            text.append(", ").append(p.verdi);
+            p = nesteInorden(p);
+            teller++;
+        }
+
+        text.append("]");
+        return text.toString();
     }
 
     public String omvendtString() {
